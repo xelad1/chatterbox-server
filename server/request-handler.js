@@ -59,21 +59,28 @@ var requestHandler = function(request, response) {
   var paths = urlParsed.pathname.split('/');
 
   if(paths[1] === "classes") {
-      if (request.method === "GET") {
+      if(request.method === "OPTIONS") {
+        response.writeHead(200, headers);
+        response.end();
+      } else if (request.method === "GET") {
         response.writeHead(statusCode, headers);
         //response.write('GOOD');
         console.log(resultArr);
-        response.end(JSON.stringify({results: resultArr}));
+        var obj = {};
+        obj["results"] = resultArr;
+        response.end(JSON.stringify(obj));
       } else if(request.method === "POST"){
         var body = '';
-
+// console.log((request));
         request.on('data', function (data) {
             body += data;
-            resultArr.push(body);
-            console.log("Partial body: " + body);
         });
         request.on('end', function () {
-            console.log("Body: " + body);
+            body = JSON.parse(body);
+
+            resultArr.push(body);
+            console.log(resultArr);
+            // console.log("Body: " + body);
         });
         response.writeHead(201, headers);
         response.end();
