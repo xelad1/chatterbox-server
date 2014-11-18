@@ -12,6 +12,7 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 var resultArr = [];
+var objectId = 1;
 var url = require('url');
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -64,30 +65,25 @@ var requestHandler = function(request, response) {
         response.end();
       } else if (request.method === "GET") {
         response.writeHead(statusCode, headers);
-        //response.write('GOOD');
         console.log(resultArr);
         var obj = {};
         obj["results"] = resultArr;
         response.end(JSON.stringify(obj));
       } else if(request.method === "POST"){
         var body = '';
-// console.log((request));
         request.on('data', function (data) {
             body += data;
         });
         request.on('end', function () {
             body = JSON.parse(body);
-
+            body.objectId = ++objectId;
             resultArr.push(body);
-            console.log(resultArr);
-            // console.log("Body: " + body);
         });
         response.writeHead(201, headers);
-        response.end();
+        response.end(JSON.stringify(body));
       }
 
-  }
-  else {
+  } else {
       response.writeHead(404, headers);
       response.end();
   }
