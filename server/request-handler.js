@@ -11,6 +11,8 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
+var resultArr = [];
+var url = require('url');
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
   //
@@ -52,17 +54,22 @@ var requestHandler = function(request, response) {
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
   //
-  if(request.url === "/classes/messages") {
+
+  var urlParsed = url.parse(request.url, true);
+  var paths = urlParsed.pathname.split('/');
+
+  if(paths[1] === "classes") {
       if (request.method === "GET") {
-        console.log("performing get request");
         response.writeHead(statusCode, headers);
         //response.write('GOOD');
-        var results = [];
-        response.end(JSON.stringify({results: results}));
+        console.log(resultArr);
+        response.end(JSON.stringify({results: resultArr}));
       } else if(request.method === "POST"){
         var body = '';
+
         request.on('data', function (data) {
             body += data;
+            resultArr.push(body);
             console.log("Partial body: " + body);
         });
         request.on('end', function () {
@@ -73,8 +80,10 @@ var requestHandler = function(request, response) {
       }
 
   }
-
-  // response.end(JSON.stringify("Hello, World!"));
+  else {
+      response.writeHead(404, headers);
+      response.end();
+  }
 };
 
 module.exports = requestHandler;
