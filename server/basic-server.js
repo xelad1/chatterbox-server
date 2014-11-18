@@ -1,5 +1,8 @@
 /* Import node's http module: */
 var http = require("http");
+var handleRequest = require('./request-handler.js');
+var url = require('url');
+// var chatData = require('https://api.parse.com/1/classes/messages/');
 
 
 // Every server needs to listen on a port with a unique number. The
@@ -22,6 +25,8 @@ var ip = "127.0.0.1";
 // incoming requests.
 //
 // After creating the server, we will tell it to listen on the given port and IP. */
+//
+
 var server = http.createServer(handleRequest);
 console.log("Listening on http://" + ip + ":" + port);
 server.listen(port, ip);
